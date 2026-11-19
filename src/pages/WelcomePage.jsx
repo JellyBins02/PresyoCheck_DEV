@@ -1,8 +1,11 @@
 
 import { User, LogIn, UserPlus } from 'lucide-react'
 import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom'
 
 export default function WelcomePage() {
+    const navigate = useNavigate()
+
 
     function handleGuest() {
         Swal.fire({
@@ -26,11 +29,118 @@ export default function WelcomePage() {
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log('Continue as Guest')
-                // Navigate to your guest homepage here
+                navigate('/home', {
+                    state: {
+                        user: {
+                            isGuest: true
+                        }
+                    }
+                })
             }
         })
     }
+
+
+
+    // Log in
+
+    function handleLogin() {
+        Swal.fire({
+            title: 'Log in to Your Account',
+
+            html: `
+            <div class="resyo-login-form">
+
+                <div class="resyo-form-group">
+                    <label for="login-username">Username</label>
+                    <input
+                        id="login-username"
+                        type="text"
+                        placeholder="Enter username"
+                        autocomplete="username"
+                    />
+                </div>
+
+                <div class="resyo-form-group">
+                    <label for="login-password">Password</label>
+                    <input
+                        id="login-password"
+                        type="password"
+                        placeholder="Enter password"
+                        autocomplete="current-password"
+                    />
+                </div>
+
+            </div>
+        `,
+
+            width: 420,
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Log In',
+            cancelButtonText: 'Cancel',
+
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+
+            customClass: {
+                popup: 'resyo-swal-popup resyo-login-popup',
+                title: 'resyo-swal-title',
+                htmlContainer: 'resyo-swal-text',
+                confirmButton: 'resyo-swal-confirm',
+                cancelButton: 'resyo-swal-cancel',
+                closeButton: 'resyo-swal-close'
+            },
+
+            buttonsStyling: false,
+            reverseButtons: true,
+
+            preConfirm: () => {
+                const username = document
+                    .getElementById('login-username')
+                    .value.trim()
+
+                const password = document
+                    .getElementById('login-password')
+                    .value
+
+                if (!username || !password) {
+                    Swal.showValidationMessage(
+                        'Please enter your username and password.'
+                    )
+                    return false
+                }
+
+                return {
+                    username,
+                    password
+                }
+            }
+
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Backend authentication will be implemented later.
+
+                Swal.fire({
+                    title: 'Form Validated!',
+                    text: 'Your login information is complete. Authentication will be available once the backend is connected.',
+                    icon: 'success',
+                    confirmButtonText: 'Got it',
+
+                    customClass: {
+                        popup: 'resyo-swal-popup',
+                        title: 'resyo-swal-title',
+                        htmlContainer: 'resyo-swal-text',
+                        confirmButton: 'resyo-swal-confirm'
+                    },
+
+                    buttonsStyling: false
+                })
+            }
+        })
+    }
+
+
 
     // Signup
     function handleSignup() {
@@ -212,7 +322,7 @@ export default function WelcomePage() {
             {/* Login */}
             <button
                 className="welcome-btn login_user"
-                onClick={handleGuest}
+                onClick={handleLogin}
             >
                 <LogIn size={22} />
                 <span className="welcome-btn-txt">
