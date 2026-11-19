@@ -719,12 +719,13 @@ body {
     color: var(--focus) !important;
 }
 
-
-
 /* =========================================
-   SWEETALERT2 SIGNUP FORM
+   SWEETALERT2 LOGIN & SIGNUP FORMS
 ========================================= */
 
+/* Popup sizing */
+
+.resyo-login-popup,
 .resyo-signup-popup {
     max-height: calc(100vh - 32px);
     overflow-y: auto;
@@ -732,6 +733,7 @@ body {
 
 /* Form layout */
 
+.resyo-login-form,
 .resyo-signup-form {
     display: flex;
     flex-direction: column;
@@ -790,8 +792,9 @@ body {
         background: var(--bg) !important;
     }
 
-/* Signup popup spacing */
+/* Popup buttons */
 
+.resyo-login-popup .swal2-actions,
 .resyo-signup-popup .swal2-actions {
     gap: 12px;
     margin-top: 20px;
@@ -800,11 +803,14 @@ body {
 /* Mobile */
 
 @media (max-width: 480px) {
+
+    .resyo-login-popup,
     .resyo-signup-popup {
         width: calc(100% - 24px) !important;
         padding: 20px 16px !important;
     }
 
+    .resyo-login-form,
     .resyo-signup-form {
         gap: 10px;
     }

@@ -1,0 +1,344 @@
+
+/* =========================================
+   HOME PAGE
+========================================= */
+
+.home-page {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'BricolageGrotesque', sans-serif;
+}
+
+
+/* =========================================
+   NAVIGATION BAR
+========================================= */
+
+.home-navbar {
+    position: relative;
+    z-index: 101;
+    width: 100%;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    background: var(--surf);
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+}
+
+.home-navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+    .home-navbar-brand span {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -0.5px;
+    }
+
+    .home-navbar-brand .currency {
+        color: var(--green);
+        font-size: 1.6rem;
+        font-weight: 900;
+    }
+
+.home-navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.home-nav-button {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--surf);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+    .home-nav-button:hover {
+        background: var(--bg);
+        border-color: var(--green);
+        color: var(--green);
+    }
+
+.home-nav-home {
+    width: 42px;
+    padding: 0;
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--ongreen);
+}
+
+    .home-nav-home:hover {
+        background: var(--deep);
+        border-color: var(--deep);
+        color: var(--ongreen);
+    }
+
+
+/* =========================================
+   FLOATING GUEST ACCOUNT LINKS
+========================================= */
+
+.home-account-actions {
+    position: absolute;
+    top: 66px;
+    right: 28px;
+    z-index: 102;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 2px 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.home-nav-login {
+    display: inline-block;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--green);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+    .home-nav-login:hover {
+        color: var(--deep);
+        text-decoration: underline;
+    }
+
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.home-main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 28px;
+    gap: 20px;
+    overflow: hidden;
+}
+
+
+/* =========================================
+   GREETING
+========================================= */
+
+.home-greeting {
+    flex-shrink: 0;
+}
+
+    .home-greeting h1 {
+        margin: 0;
+        color: var(--ink);
+        font-size: 1.65rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+
+/* =========================================
+   HOME CONTENT LAYOUT
+========================================= */
+
+.home-content {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+    gap: 16px;
+    overflow: hidden;
+}
+
+
+/* =========================================
+   LEFT PANELS
+========================================= */
+
+.home-left-panels {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.home-panel-one {
+    flex: 2;
+    min-height: 0;
+}
+
+.home-panel-two {
+    flex: 8;
+    min-height: 0;
+}
+
+
+/* =========================================
+   RIGHT PANEL
+========================================= */
+
+.home-right-panel {
+    min-width: 0;
+    min-height: 0;
+}
+
+
+/* =========================================
+   SHARED PANEL STYLING
+========================================= */
+
+.home-panel {
+    background: var(--surf);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    overflow: auto;
+    color: var(--ink);
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 768px) {
+    .home-navbar {
+        padding: 0 16px;
+    }
+
+    .home-navbar-brand span {
+        font-size: 1.15rem;
+    }
+
+    .home-navbar-brand .currency {
+        font-size: 1.4rem;
+    }
+
+    .home-nav-button {
+        padding: 0 10px;
+        font-size: 0.8rem;
+    }
+
+    .home-account-actions {
+        right: 16px;
+        gap: 12px;
+    }
+
+    .home-nav-login {
+        font-size: 0.78rem;
+    }
+
+    .home-main {
+        padding: 18px 16px;
+    }
+
+    .home-content {
+        grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+        gap: 10px;
+    }
+
+    .home-left-panels {
+        gap: 10px;
+    }
+
+    .home-panel {
+        padding: 14px;
+        border-radius: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-navbar {
+        min-height: 58px;
+        padding: 0 12px;
+    }
+
+    .home-navbar-actions {
+        gap: 5px;
+    }
+
+    .home-nav-button {
+        min-height: 36px;
+        padding: 0 8px;
+        font-size: 0.72rem;
+        gap: 5px;
+    }
+
+    .home-nav-home {
+        width: 36px;
+        padding: 0;
+    }
+
+    .home-nav-button svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .home-account-actions {
+        top: 60px;
+        right: 12px;
+        gap: 10px;
+    }
+
+    .home-nav-login {
+        font-size: 0.7rem;
+    }
+
+    .home-main {
+        padding: 14px 12px;
+        gap: 14px;
+    }
+
+    .home-greeting h1 {
+        font-size: 1.35rem;
+    }
+
+    .home-content {
+        grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+        gap: 8px;
+    }
+
+    .home-left-panels {
+        gap: 8px;
+    }
+
+    .home-panel {
+        padding: 10px;
+        border-radius: 8px;
+    }
+}
