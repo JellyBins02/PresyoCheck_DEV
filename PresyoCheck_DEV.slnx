@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="presyocheck_dev.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>

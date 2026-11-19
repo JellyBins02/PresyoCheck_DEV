@@ -1,0 +1,845 @@
+
+/* =========================================
+   1. PERMANENT STYLES
+   Rarely changed
+========================================= */
+
+
+/* HEXAGON BACKGROUND */
+
+.app-container {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.hex-background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.hexagon {
+    position: absolute;
+    width: 140px;
+    height: 122px;
+    background: color-mix( in srgb, var(--green) 18%, var(--bg) );
+    opacity: 0.8;
+    clip-path: polygon( 25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50% );
+}
+
+/* Individual hexagons */
+
+.hex-one {
+    top: 5%;
+    left: 7%;
+    width: 180px;
+    height: 156px;
+}
+
+.hex-two {
+    top: 18%;
+    right: 10%;
+    width: 130px;
+    height: 113px;
+    background: color-mix( in srgb, var(--star) 22%, var(--bg) );
+}
+
+.hex-three {
+    top: 52%;
+    left: 14%;
+    width: 110px;
+    height: 95px;
+}
+
+.hex-four {
+    top: 70%;
+    right: 7%;
+    width: 190px;
+    height: 165px;
+    background: color-mix( in srgb, var(--hd) 18%, var(--bg) );
+}
+
+.hex-five {
+    top: 40%;
+    right: 28%;
+    width: 75px;
+    height: 65px;
+    background: color-mix( in srgb, var(--green) 25%, var(--bg) );
+}
+
+.hex-six {
+    bottom: 5%;
+    left: 42%;
+    width: 125px;
+    height: 108px;
+    background: color-mix( in srgb, var(--star) 18%, var(--bg) );
+}
+
+.hex-seven {
+    top: -35px;
+    right: 42%;
+    width: 110px;
+    height: 95px;
+}
+
+.hex-eight {
+    bottom: 25%;
+    left: -35px;
+    width: 150px;
+    height: 130px;
+    background: color-mix( in srgb, var(--hd) 20%, var(--bg) );
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+    .hex-one {
+        left: -45px;
+    }
+
+    .hex-two {
+        right: -20px;
+    }
+
+    .hex-four {
+        right: -55px;
+    }
+
+    .hex-five {
+        right: 15%;
+    }
+
+    .hex-six {
+        left: 35%;
+    }
+}
+
+
+/* Font */
+
+@font-face {
+    font-family: 'BricolageGrotesque';
+    src: url('./assets/fonts/BricolageGrotesqueVF.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Global reset */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'BricolageGrotesque', sans-serif;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* App container */
+
+.app-container {
+    min-height: 100vh;
+    position: relative;
+    background: var(--bg);
+    color: var(--ink);
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+
+/* =========================================
+   2. THEME COLORS
+   Change palette colors here
+========================================= */
+
+/* MODERN FINTECH - LIGHT */
+
+:root,
+:root[data-theme="light"][data-mode="light"] {
+    --bg: #F1F5F9;
+    --surf: #FFFFFF;
+    --ink: #0F172A;
+    --mute: #64748B;
+    --line: #CBD5E1;
+    --green: #2563EB;
+    --deep: #1D4ED8;
+    --hd: #1E40AF;
+    --link: #2563EB;
+    --focus: #2563EB;
+    --ongreen: #FFFFFF;
+    --star: #F97316;
+    --tag: #F97316;
+    --tagink: #FFFFFF;
+    --gold: #A16207;
+}
+
+    /* MODERN FINTECH - DARK */
+
+    :root[data-theme="light"][data-mode="dark"] {
+        --bg: #090D16;
+        --surf: #1E293B;
+        --ink: #F8FAFC;
+        --mute: #94A3B8;
+        --line: #334155;
+        --green: #6366F1;
+        --deep: #4F46E5;
+        --hd: #818CF8;
+        --link: #818CF8;
+        --focus: #818CF8;
+        --ongreen: #FFFFFF;
+        --star: #FB923C;
+        --tag: #FB923C;
+        --tagink: #090D16;
+        --gold: #FBBF24;
+    }
+
+    /* PREMIUM SHOPPING - LIGHT */
+
+    :root[data-theme="dark"][data-mode="light"] {
+        --bg: #F5F3FF;
+        --surf: #FFFFFF;
+        --ink: #1E1B4B;
+        --mute: #6B6580;
+        --line: #DDD6FE;
+        --green: #7C3AED;
+        --deep: #6D28D9;
+        --hd: #5B21B6;
+        --link: #7C3AED;
+        --focus: #8B5CF6;
+        --ongreen: #FFFFFF;
+        --star: #F59E0B;
+        --tag: #F59E0B;
+        --tagink: #1E1B4B;
+        --gold: #B45309;
+    }
+
+    /* PREMIUM SHOPPING - DARK */
+
+    :root[data-theme="dark"][data-mode="dark"] {
+        --bg: #090D16;
+        --surf: #1E293B;
+        --ink: #F8FAFC;
+        --mute: #94A3B8;
+        --line: #334155;
+        --green: #8B5CF6;
+        --deep: #7C3AED;
+        --hd: #A78BFA;
+        --link: #A78BFA;
+        --focus: #A78BFA;
+        --ongreen: #FFFFFF;
+        --star: #F59E0B;
+        --tag: #F59E0B;
+        --tagink: #090D16;
+        --gold: #FBBF24;
+    }
+
+    /* DEAL HUNTER - LIGHT */
+
+    :root[data-theme="custom"][data-mode="light"] {
+        --bg: #FFF7ED;
+        --surf: #FFFFFF;
+        --ink: #431407;
+        --mute: #9A3412;
+        --line: #FED7AA;
+        --green: #EA5808;
+        --deep: #C2410C;
+        --hd: #9A3412;
+        --link: #EA5808;
+        --focus: #F97316;
+        --ongreen: #FFFFFF;
+        --star: #84CC16;
+        --tag: #EA580C;
+        --tagink: #FFFFFF;
+        --gold: #A16207;
+    }
+
+    /* DEAL HUNTER - DARK */
+
+    :root[data-theme="custom"][data-mode="dark"] {
+        --bg: #0F172A;
+        --surf: #1E293B;
+        --ink: #FFF7ED;
+        --mute: #FDBA74;
+        --line: #7C2D12;
+        --green: #EA5808;
+        --deep: #C2410C;
+        --hd: #F97316;
+        --link: #F97316;
+        --focus: #F97316;
+        --ongreen: #FFFFFF;
+        --star: #84CC16;
+        --tag: #EA580C;
+        --tagink: #FFFFFF;
+        --gold: #FBBF24;
+    }
+
+
+/* =========================================
+   3. GLOBAL THEME APPLICATION
+========================================= */
+
+html {
+    background: var(--bg);
+    transition: background-color 0.25s ease;
+}
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+
+/* =========================================
+   4. FLOATING PALETTE SELECTOR
+========================================= */
+
+.theme-btn {
+    position: fixed;
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    z-index: 100;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surf);
+    color: var(--ink);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.3s ease, padding 0.3s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+    /* Expanded panel */
+
+    .theme-btn.open {
+        width: min(300px, calc(100vw - 28px));
+        height: 400px;
+        padding: 14px;
+        border-radius: 14px;
+        cursor: default;
+    }
+
+/* Collapsed icon */
+
+.theme-btn-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    opacity: 1;
+    transition: opacity 0.15s ease;
+}
+
+.theme-btn.open .theme-btn-icon {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Expanded content */
+
+.theme-btn-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease 0.1s;
+}
+
+.theme-btn.open .theme-btn-content {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Header */
+
+.palette-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+    .palette-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--ink);
+    }
+
+.palette-close {
+    padding: 4px 6px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+    font-size: 1.1rem;
+}
+
+    .palette-close:hover {
+        background: var(--bg);
+        color: var(--ink);
+    }
+
+.palette-description {
+    margin: 0 0 12px;
+    color: var(--mute);
+    font-size: 0.82rem;
+}
+
+/* Palette options */
+
+.palette-choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 10px;
+    margin-bottom: 8px;
+    text-align: left;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+    .palette-choice:hover {
+        border-color: var(--focus);
+        transform: translateY(-1px);
+    }
+
+    .palette-choice:active {
+        transform: scale(0.98);
+    }
+
+    .palette-choice.active {
+        border-color: var(--focus);
+        box-shadow: inset 0 0 0 1px var(--focus);
+    }
+
+/* Palette color dots */
+
+.palette-dots {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+    .palette-dots i {
+        display: block;
+        width: 15px;
+        height: 15px;
+        border: 1px solid rgba(128, 128, 128, 0.25);
+        border-radius: 50%;
+    }
+
+        .palette-dots i + i {
+            margin-left: -4px;
+        }
+
+/* Palette text */
+
+.palette-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+    .palette-info strong {
+        color: var(--ink);
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+
+    .palette-info small {
+        color: var(--mute);
+        font-size: 0.75rem;
+    }
+
+/* Appearance options */
+
+.appearance-section {
+    margin-bottom: 14px;
+}
+
+.appearance-title {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--ink);
+    font-size: 0.9rem;
+}
+
+.appearance-options {
+    display: flex;
+    gap: 8px;
+}
+
+.appearance-choice {
+    flex: 1;
+    padding: 10px 6px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 0.8rem;
+    transition: 0.2s ease;
+}
+
+    .appearance-choice:hover {
+        border-color: var(--focus);
+    }
+
+    .appearance-choice.active {
+        border: 2px solid var(--focus);
+        background: var(--surf);
+        font-weight: 700;
+    }
+
+
+/* =========================================
+   5. WELCOME PAGE
+========================================= */
+
+.welcome-box {
+    position: relative;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: calc(100% - 32px);
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 16px 0;
+}
+
+/* Brand and title */
+
+.welcome-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.welcome_title {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin: 0;
+    line-height: 1.1;
+}
+
+    .welcome_title > span {
+        font-size: clamp(2.5rem, 10vw, 3.75rem);
+    }
+
+.currency {
+    color: var(--star);
+    font-weight: bold;
+}
+
+.title {
+    color: var(--ink);
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* Description */
+
+.welcome-description {
+    color: var(--mute);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   6. WELCOME BUTTONS
+========================================= */
+
+.welcome-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 88px;
+    height: auto;
+    margin-top: 0;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surf);
+    color: var(--ink);
+    text-align: center;
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+}
+
+    .welcome-btn:hover {
+        border-color: var(--focus);
+        transform: translateY(-2px);
+    }
+
+    .welcome-btn:active {
+        transform: scale(0.98);
+    }
+
+.welcome-btn-txt {
+    color: var(--ink);
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+
+.welcome-btn-subtxt {
+    color: var(--mute);
+    font-size: 0.85rem;
+}
+
+/* Guest button */
+
+.login_guest {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--ongreen);
+}
+
+    .login_guest .welcome-btn-txt,
+    .login_guest .welcome-btn-subtxt {
+        color: var(--ongreen);
+    }
+
+    .login_guest:hover {
+        background: var(--deep);
+        border-color: var(--deep);
+    }
+
+/* Login and signup buttons */
+
+.login_user,
+.signup {
+    background: var(--surf);
+    color: var(--ink);
+}
+
+    .login_user:hover,
+    .signup:hover {
+        background: var(--bg);
+    }
+
+
+/* =========================================
+   SWEETALERT2 THEME
+========================================= */
+
+.resyo-swal-popup {
+    background: var(--surf) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--line);
+    border-radius: 16px !important;
+    font-family: 'BricolageGrotesque', sans-serif !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.resyo-swal-title {
+    color: var(--ink) !important;
+    font-weight: 700 !important;
+}
+
+.resyo-swal-text {
+    color: var(--mute) !important;
+}
+
+/* Shared button styling */
+
+.resyo-swal-popup .swal2-actions {
+    gap: 12px;
+}
+
+.resyo-swal-confirm,
+.resyo-swal-cancel {
+    padding: 10px 24px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-family: inherit !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+/* Confirm button */
+
+.resyo-swal-confirm {
+    background: var(--green) !important;
+    color: var(--ongreen) !important;
+}
+
+    .resyo-swal-confirm:hover {
+        background: var(--deep) !important;
+    }
+
+/* Cancel button */
+
+.resyo-swal-cancel {
+    background: var(--line) !important;
+    color: var(--ink) !important;
+}
+
+    .resyo-swal-cancel:hover {
+        background: var(--mute) !important;
+    }
+
+/* SweetAlert2 icon colors */
+
+.swal2-icon.swal2-info {
+    border-color: var(--focus) !important;
+    color: var(--focus) !important;
+}
+
+
+
+/* =========================================
+   SWEETALERT2 SIGNUP FORM
+========================================= */
+
+.resyo-signup-popup {
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+}
+
+/* Form layout */
+
+.resyo-signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+}
+
+/* Individual fields */
+
+.resyo-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+    .resyo-form-group label {
+        color: var(--ink);
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    /* Inputs */
+
+    .resyo-form-group input {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        outline: none;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .resyo-form-group input::placeholder {
+            color: var(--mute);
+            opacity: 0.7;
+        }
+
+        .resyo-form-group input:focus {
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px color-mix( in srgb, var(--focus) 15%, transparent );
+        }
+
+/* Close button */
+
+.resyo-swal-close {
+    color: var(--mute) !important;
+}
+
+    .resyo-swal-close:hover {
+        color: var(--ink) !important;
+        background: var(--bg) !important;
+    }
+
+/* Signup popup spacing */
+
+.resyo-signup-popup .swal2-actions {
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+    .resyo-signup-popup {
+        width: calc(100% - 24px) !important;
+        padding: 20px 16px !important;
+    }
+
+    .resyo-signup-form {
+        gap: 10px;
+    }
+
+    .resyo-form-group input {
+        padding: 10px;
+    }
+}
+
+
+
+
+/* =========================================
+   7. MOBILE RESPONSIVENESS
+========================================= */
+
+@media (max-width: 480px) {
+
+    .welcome-box {
+        top: 12px;
+        gap: 14px;
+        width: calc(100% - 32px);
+    }
+
+    .welcome_title > span {
+        font-size: clamp(2.3rem, 10vw, 3rem);
+    }
+
+    .welcome-btn {
+        min-height: 80px;
+    }
+
+    .theme-btn.open {
+        height: 400px;
+        max-height: calc(100vh - 28px);
+        overflow-y: auto;
+    }
+}
