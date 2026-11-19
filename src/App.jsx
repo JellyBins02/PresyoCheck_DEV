@@ -1,10 +1,10 @@
+
 import { useState, useEffect, useRef } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './pages/WelcomePage'
+import { Routes, Route } from 'react-router-dom'
+
 import './index.css'
-import WelcomePage from './pages/WelcomePage';
+import Home from './pages/Home'
+import WelcomePage from './pages/WelcomePage'
 
 function App() {
     const [theme, setTheme] = useState('light')
@@ -39,6 +39,7 @@ function App() {
 
     return (
         <div className="app-container">
+
             {/* Abstract hexagon background */}
             <div className="hex-background">
                 <div className="hexagon hex-one"></div>
@@ -51,7 +52,11 @@ function App() {
                 <div className="hexagon hex-eight"></div>
             </div>
 
-            <WelcomePage />
+            {/* Application Routes */}
+            <Routes>
+                <Route path="/" element={<WelcomePage />} />
+                <Route path="/home" element={<Home />} />
+            </Routes>
 
             {/* Floating palette selector */}
             <div
@@ -155,6 +160,7 @@ function App() {
 
                 </div>
             </div>
+
         </div>
     )
 }
