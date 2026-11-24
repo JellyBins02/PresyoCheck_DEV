@@ -2,84 +2,86 @@
 import { User, LogIn, UserPlus } from 'lucide-react'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
+import {
+    checkUsername,
+    checkEmail,
+    registerUser,
+    loginUser
+} from '../services/userService'
+import { useAuth } from '../context/useAuth'
 
 export default function WelcomePage() {
     const navigate = useNavigate()
+    const { login, logout } = useAuth()
 
+    const swalClasses = {
+        popup: 'resyo-swal-popup',
+        title: 'resyo-swal-title',
+        htmlContainer: 'resyo-swal-text',
+        confirmButton: 'resyo-swal-confirm',
+        cancelButton: 'resyo-swal-cancel'
+    }
 
+    // Continue as Guest
     function handleGuest() {
         Swal.fire({
             title: 'Continue as Guest?',
             text: 'Browsing as a Guest prevents you from using other features available in the app. Do you want to proceed?',
             icon: 'info',
-
             showCancelButton: true,
             confirmButtonText: 'Continue >',
             cancelButtonText: '< Go Back',
-
             customClass: {
-                popup: 'resyo-swal-popup',
-                title: 'resyo-swal-title',
-                htmlContainer: 'resyo-swal-text',
-                confirmButton: 'resyo-swal-confirm',
+                ...swalClasses,
                 cancelButton: 'resyo-swal-cancel'
             },
-
             buttonsStyling: false,
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                navigate('/home', {
-                    state: {
-                        user: {
-                            isGuest: true
-                        }
-                    }
-                })
+                logout()
+
+                navigate('/home')
             }
         })
     }
 
-
-
     // Log in
-
-    function handleLogin() {
-        Swal.fire({
+    async function handleLogin() {
+        const result = await Swal.fire({
             title: 'Log in to Your Account',
 
             html: `
-            <div class="resyo-login-form">
+                <div class="resyo-login-form">
 
-                <div class="resyo-form-group">
-                    <label for="login-username">Username</label>
-                    <input
-                        id="login-username"
-                        type="text"
-                        placeholder="Enter username"
-                        autocomplete="username"
-                    />
+                    <div class="resyo-form-group">
+                        <label for="login-username">Username</label>
+                        <input
+                            id="login-username"
+                            type="text"
+                            placeholder="Enter username"
+                            autocomplete="username"
+                        />
+                    </div>
+
+                    <div class="resyo-form-group">
+                        <label for="login-password">Password</label>
+                        <input
+                            id="login-password"
+                            type="password"
+                            placeholder="Enter password"
+                            autocomplete="current-password"
+                        />
+                    </div>
+
                 </div>
-
-                <div class="resyo-form-group">
-                    <label for="login-password">Password</label>
-                    <input
-                        id="login-password"
-                        type="password"
-                        placeholder="Enter password"
-                        autocomplete="current-password"
-                    />
-                </div>
-
-            </div>
-        `,
+            `,
 
             width: 420,
             showCloseButton: true,
             showCancelButton: true,
             confirmButtonText: 'Log In',
             cancelButtonText: 'Cancel',
-
             allowOutsideClick: false,
             allowEscapeKey: false,
 
@@ -111,41 +113,83 @@ export default function WelcomePage() {
                     return false
                 }
 
-                return {
-                    username,
-                    password
-                }
-            }
-
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Backend authentication will be implemented later.
-
-                Swal.fire({
-                    title: 'Form Validated!',
-                    text: 'Your login information is complete. Authentication will be available once the backend is connected.',
-                    icon: 'success',
-                    confirmButtonText: 'Got it',
-
-                    customClass: {
-                        popup: 'resyo-swal-popup',
-                        title: 'resyo-swal-title',
-                        htmlContainer: 'resyo-swal-text',
-                        confirmButton: 'resyo-swal-confirm'
-                    },
-
-                    buttonsStyling: false
-                })
+                return { username, password }
             }
         })
+
+        if (!result.isConfirmed) return
+
+        try {
+            Swal.fire({
+                title: 'Logging In...',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => Swal.showLoading(),
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+
+            const response = await loginUser(result.value)
+
+            if (!response.ok) {
+                throw new Error(
+                    response.data.message || 'Invalid username or password.'
+                )
+            }
+
+            // Update global authentication state
+            login(response.data.user)
+
+            await Swal.fire({
+                title: 'Welcome Back!',
+                text: `Welcome back, ${response.data.user.firstName}!`,
+                icon: 'success',
+                confirmButtonText: 'Continue',
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+
+            // Navigate to Home after successful login
+            navigate('/home')
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Login Failed',
+                text: error.message || 'Unable to log in. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'Try Again',
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+        }
     }
 
+    // Check availability response
+    function getAvailability(response) {
+        if (typeof response.available === 'boolean') {
+            return response.available
+        }
 
+        if (typeof response.isAvailable === 'boolean') {
+            return response.isAvailable
+        }
 
-    // Signup
-    function handleSignup() {
-        Swal.fire({
+        if (typeof response.exists === 'boolean') {
+            return !response.exists
+        }
+
+        if (typeof response.isTaken === 'boolean') {
+            return !response.isTaken
+        }
+
+        return null
+    }
+
+    // Sign-up
+    async function handleSignup() {
+        const result = await Swal.fire({
             title: 'Create an Account',
+
             html: `
                 <div class="resyo-signup-form">
 
@@ -217,7 +261,6 @@ export default function WelcomePage() {
             showCancelButton: true,
             confirmButtonText: 'Sign Up',
             cancelButtonText: 'Cancel',
-
             allowOutsideClick: false,
             allowEscapeKey: false,
 
@@ -233,62 +276,210 @@ export default function WelcomePage() {
             buttonsStyling: false,
             reverseButtons: true,
 
-            preConfirm: () => {
-                const firstName = document.getElementById('signup-firstname').value.trim()
-                const middleName = document.getElementById('signup-middlename').value.trim()
-                const lastName = document.getElementById('signup-lastname').value.trim()
-                const email = document.getElementById('signup-email').value.trim()
-                const username = document.getElementById('signup-username').value.trim()
-                const password = document.getElementById('signup-password').value
+            preConfirm: async () => {
+                const firstName = document
+                    .getElementById('signup-firstname').value.trim()
 
-                if (!firstName || !middleName || !lastName ||
-                    !email || !username || !password) {
+                const middleName = document
+                    .getElementById('signup-middlename').value.trim()
 
-                    Swal.showValidationMessage('Please complete all fields.')
+                const lastName = document
+                    .getElementById('signup-lastname').value.trim()
+
+                const email = document
+                    .getElementById('signup-email').value.trim()
+
+                const username = document
+                    .getElementById('signup-username').value.trim()
+
+                const password = document
+                    .getElementById('signup-password').value
+
+                if (
+                    !firstName ||
+                    !middleName ||
+                    !lastName ||
+                    !email ||
+                    !username ||
+                    !password
+                ) {
+                    Swal.showValidationMessage(
+                        'Please complete all fields.'
+                    )
                     return false
                 }
 
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
                 if (!emailPattern.test(email)) {
-                    Swal.showValidationMessage('Please enter a valid email address.')
+                    Swal.showValidationMessage(
+                        'Please enter a valid email address.'
+                    )
                     return false
                 }
 
-                return {
-                    firstName,
-                    middleName,
-                    lastName,
-                    email,
-                    username,
-                    password
+                if (username.length < 3) {
+                    Swal.showValidationMessage(
+                        'Username must contain at least 3 characters.'
+                    )
+                    return false
+                }
+
+                if (password.length < 8) {
+                    Swal.showValidationMessage(
+                        'Password must contain at least 8 characters.'
+                    )
+                    return false
+                }
+
+                try {
+                    // Check username availability
+                    const usernameResult = await checkUsername(username)
+                    const usernameAvailable = getAvailability(usernameResult)
+
+                    if (usernameAvailable === false) {
+                        Swal.showValidationMessage(
+                            'This username is already taken. Please choose another.'
+                        )
+                        return false
+                    }
+
+                    if (usernameAvailable === null) {
+                        Swal.showValidationMessage(
+                            'Unexpected response while checking username availability.'
+                        )
+                        return false
+                    }
+
+                    // Check email availability
+                    const emailResult = await checkEmail(email)
+                    const emailAvailable = getAvailability(emailResult)
+
+                    if (emailAvailable === false) {
+                        Swal.showValidationMessage(
+                            'This email address is already registered.'
+                        )
+                        return false
+                    }
+
+                    if (emailAvailable === null) {
+                        Swal.showValidationMessage(
+                            'Unexpected response while checking email availability.'
+                        )
+                        return false
+                    }
+
+                    return {
+                        firstName,
+                        middleName,
+                        lastName,
+                        email,
+                        username,
+                        password
+                    }
+
+                } catch (error) {
+                    Swal.showValidationMessage(
+                        error.message || 'Unable to connect to the API.'
+                    )
+                    return false
                 }
             }
+        })
 
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Form validation succeeded.
-                // Backend registration will be implemented later.
+        if (!result.isConfirmed) {
+            return
+        }
+
+        // Register account
+        try {
+            Swal.fire({
+                title: 'Creating Your Account',
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+                customClass: swalClasses
+            })
+
+            const registrationData = {
+                ...result.value,
+                confirmPossibleDuplicate: false
+            }
+
+            let response = await registerUser(registrationData)
+
+            // Possible duplicate full name
+            if (
+                response.status === 409 &&
+                response.data.requiresConfirmation === true
+            ) {
+                const confirmation = await Swal.fire({
+                    title: 'Possible Existing Account',
+                    text: response.data.message ||
+                        'An account with the same name may already exist. Do you still want to continue?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Continue',
+                    cancelButtonText: 'Cancel',
+                    customClass: swalClasses,
+                    buttonsStyling: false,
+                    reverseButtons: true
+                })
+
+                if (!confirmation.isConfirmed) {
+                    return
+                }
 
                 Swal.fire({
-                    title: 'Form Validated!',
-                    text: 'Your information is complete. Account registration will be available once the backend is connected.',
-                    icon: 'success',
-                    confirmButtonText: 'Got it',
-                    customClass: {
-                        popup: 'resyo-swal-popup',
-                        title: 'resyo-swal-title',
-                        htmlContainer: 'resyo-swal-text',
-                        confirmButton: 'resyo-swal-confirm'
+                    title: 'Creating Your Account',
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading()
                     },
-                    buttonsStyling: false
+                    customClass: swalClasses
+                })
+
+                response = await registerUser({
+                    ...registrationData,
+                    confirmPossibleDuplicate: true
                 })
             }
-        })
+
+            if (!response.ok) {
+                throw new Error(
+                    response.data.message ||
+                    'Registration failed. Please try again.'
+                )
+            }
+
+            await Swal.fire({
+                title: 'Account Created!',
+                text: 'Your account has been successfully registered.',
+                icon: 'success',
+                confirmButtonText: 'Got it',
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Registration Failed',
+                text: error.message ||
+                    'Something went wrong while creating your account.',
+                icon: 'error',
+                confirmButtonText: 'Got it',
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+        }
     }
-
-
-
 
     return (
         <div className="welcome-box">
