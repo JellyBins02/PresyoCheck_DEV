@@ -1,14 +1,24 @@
 
-import { useLocation } from 'react-router-dom'
 import { House, Factory, Store } from 'lucide-react'
 import Swal from 'sweetalert2'
+import {
+    checkUsername,
+    checkEmail,
+    registerUser,
+    loginUser
+} from '../services/userService'
+import { useAuth } from '../context/useAuth'
 import './Home.css'
 
 export default function Home() {
-    const location = useLocation()
+    const { user, login, logout } = useAuth()
 
-    const user = location.state?.user ?? {
-        isGuest: true
+    const swalClasses = {
+        popup: 'resyo-swal-popup',
+        title: 'resyo-swal-title',
+        htmlContainer: 'resyo-swal-text',
+        confirmButton: 'resyo-swal-confirm',
+        cancelButton: 'resyo-swal-cancel'
     }
 
     // Greeting
@@ -44,8 +54,8 @@ export default function Home() {
     }
 
     // Login
-    function handleLogin() {
-        Swal.fire({
+    async function handleLogin() {
+        const result = await Swal.fire({
             title: 'Log in to Your Account',
             html: `
                 <div class="resyo-login-form">
@@ -105,31 +115,100 @@ export default function Home() {
 
                 return { username, password }
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Form Validated!',
-                    text: 'Your login information is complete. Authentication will be available once the backend is connected.',
-                    icon: 'success',
-                    confirmButtonText: 'Got it',
-                    customClass: {
-                        popup: 'resyo-swal-popup',
-                        title: 'resyo-swal-title',
-                        htmlContainer: 'resyo-swal-text',
-                        confirmButton: 'resyo-swal-confirm'
-                    },
-                    buttonsStyling: false
-                })
-            }
         })
+
+        if (!result.isConfirmed) return
+
+        try {
+            Swal.fire({
+                title: 'Logging In...',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => Swal.showLoading(),
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+
+            const response = await loginUser(result.value)
+
+            if (!response.ok) {
+                throw new Error(
+                    response.data.message || 'Invalid username or password.'
+                )
+            }
+
+            await Swal.fire({
+                title: 'Welcome Back!',
+                text: `Welcome back, ${response.data.user.firstName}!`,
+                icon: 'success',
+                confirmButtonText: 'Continue',
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+
+            // Update global authentication state
+            login(response.data.user)
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Login Failed',
+                text: error.message || 'Unable to log in. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'Try Again',
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+        }
+    }
+
+    // Logout
+    async function handleLogout() {
+        const result = await Swal.fire({
+            title: 'Log Out?',
+            text: 'Are you sure you want to log out of your account?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Log Out',
+            cancelButtonText: 'Cancel',
+            customClass: swalClasses,
+            buttonsStyling: false,
+            reverseButtons: true
+        })
+
+        if (result.isConfirmed) {
+            logout()
+        }
+    }
+
+    // Check availability response
+    function getAvailability(response) {
+        if (typeof response.available === 'boolean') {
+            return response.available
+        }
+
+        if (typeof response.isAvailable === 'boolean') {
+            return response.isAvailable
+        }
+
+        if (typeof response.exists === 'boolean') {
+            return !response.exists
+        }
+
+        if (typeof response.isTaken === 'boolean') {
+            return !response.isTaken
+        }
+
+        return null
     }
 
     // Sign-up
-    function handleSignup() {
-        Swal.fire({
+    async function handleSignup() {
+        const result = await Swal.fire({
             title: 'Create an Account',
+
             html: `
                 <div class="resyo-signup-form">
+
                     <div class="resyo-form-group">
                         <label for="signup-firstname">First Name</label>
                         <input
@@ -189,8 +268,10 @@ export default function Home() {
                             autocomplete="new-password"
                         />
                     </div>
+
                 </div>
             `,
+
             width: 520,
             showCloseButton: true,
             showCancelButton: true,
@@ -198,40 +279,34 @@ export default function Home() {
             cancelButtonText: 'Cancel',
             allowOutsideClick: false,
             allowEscapeKey: false,
+
             customClass: {
+                ...swalClasses,
                 popup: 'resyo-swal-popup resyo-signup-popup',
-                title: 'resyo-swal-title',
-                htmlContainer: 'resyo-swal-text',
-                confirmButton: 'resyo-swal-confirm',
-                cancelButton: 'resyo-swal-cancel',
                 closeButton: 'resyo-swal-close'
             },
+
             buttonsStyling: false,
             reverseButtons: true,
-            preConfirm: () => {
+
+            preConfirm: async () => {
                 const firstName = document
-                    .getElementById('signup-firstname')
-                    .value.trim()
+                    .getElementById('signup-firstname').value.trim()
 
                 const middleName = document
-                    .getElementById('signup-middlename')
-                    .value.trim()
+                    .getElementById('signup-middlename').value.trim()
 
                 const lastName = document
-                    .getElementById('signup-lastname')
-                    .value.trim()
+                    .getElementById('signup-lastname').value.trim()
 
                 const email = document
-                    .getElementById('signup-email')
-                    .value.trim()
+                    .getElementById('signup-email').value.trim()
 
                 const username = document
-                    .getElementById('signup-username')
-                    .value.trim()
+                    .getElementById('signup-username').value.trim()
 
                 const password = document
-                    .getElementById('signup-password')
-                    .value
+                    .getElementById('signup-password').value
 
                 if (
                     !firstName ||
@@ -256,32 +331,167 @@ export default function Home() {
                     return false
                 }
 
-                return {
-                    firstName,
-                    middleName,
-                    lastName,
-                    email,
-                    username,
-                    password
+                if (username.length < 3) {
+                    Swal.showValidationMessage(
+                        'Username must contain at least 3 characters.'
+                    )
+                    return false
+                }
+
+                if (password.length < 8) {
+                    Swal.showValidationMessage(
+                        'Password must contain at least 8 characters.'
+                    )
+                    return false
+                }
+
+                try {
+                    // Check username
+                    const usernameResult = await checkUsername(username)
+                    const usernameAvailable = getAvailability(usernameResult)
+
+                    if (usernameAvailable === false) {
+                        Swal.showValidationMessage(
+                            'This username is already taken. Please choose another.'
+                        )
+                        return false
+                    }
+
+                    if (usernameAvailable === null) {
+                        Swal.showValidationMessage(
+                            'Unexpected response while checking username availability.'
+                        )
+                        return false
+                    }
+
+                    // Check email
+                    const emailResult = await checkEmail(email)
+                    const emailAvailable = getAvailability(emailResult)
+
+                    if (emailAvailable === false) {
+                        Swal.showValidationMessage(
+                            'This email address is already registered.'
+                        )
+                        return false
+                    }
+
+                    if (emailAvailable === null) {
+                        Swal.showValidationMessage(
+                            'Unexpected response while checking email availability.'
+                        )
+                        return false
+                    }
+
+                    return {
+                        firstName,
+                        middleName,
+                        lastName,
+                        email,
+                        username,
+                        password
+                    }
+
+                } catch (error) {
+                    Swal.showValidationMessage(
+                        error.message || 'Unable to connect to the API.'
+                    )
+                    return false
                 }
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
+        })
+
+        if (!result.isConfirmed) {
+            return
+        }
+
+        // Register account
+        try {
+            Swal.fire({
+                title: 'Creating Your Account',
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+                customClass: swalClasses
+            })
+
+            const registrationData = {
+                ...result.value,
+                confirmPossibleDuplicate: false
+            }
+
+            let response = await registerUser(registrationData)
+
+            // Check for possible duplicate full name
+            if (
+                response.status === 409 &&
+                response.data.requiresConfirmation === true
+            ) {
+                const confirmation = await Swal.fire({
+                    title: 'Possible Existing Account',
+                    text: response.data.message ||
+                        'An account with the same name may already exist. Do you still want to continue?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Continue',
+                    cancelButtonText: 'Cancel',
+                    customClass: swalClasses,
+                    buttonsStyling: false,
+                    reverseButtons: true
+                })
+
+                if (!confirmation.isConfirmed) {
+                    return
+                }
+
                 Swal.fire({
-                    title: 'Form Validated!',
-                    text: 'Your information is complete. Account registration will be available once the backend is connected.',
-                    icon: 'success',
-                    confirmButtonText: 'Got it',
-                    customClass: {
-                        popup: 'resyo-swal-popup',
-                        title: 'resyo-swal-title',
-                        htmlContainer: 'resyo-swal-text',
-                        confirmButton: 'resyo-swal-confirm'
+                    title: 'Creating Your Account',
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading()
                     },
-                    buttonsStyling: false
+                    customClass: swalClasses
+                })
+
+                response = await registerUser({
+                    ...registrationData,
+                    confirmPossibleDuplicate: true
                 })
             }
-        })
+
+            if (!response.ok) {
+                throw new Error(
+                    response.data.message ||
+                    'Registration failed. Please try again.'
+                )
+            }
+
+            await Swal.fire({
+                title: 'Account Created!',
+                text: 'Your account has been successfully registered.',
+                icon: 'success',
+                confirmButtonText: 'Got it',
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Registration Failed',
+                text: error.message ||
+                    'Something went wrong while creating your account.',
+                icon: 'error',
+                confirmButtonText: 'Got it',
+                customClass: swalClasses,
+                buttonsStyling: false
+            })
+        }
     }
 
     return (
@@ -322,26 +532,38 @@ export default function Home() {
                 </div>
             </nav>
 
-            {/* Floating Guest Account Links */}
-            {user.isGuest && (
-                <div className="home-account-actions">
-                    <button
-                        type="button"
-                        className="home-nav-login"
-                        onClick={handleLogin}
-                    >
-                        Log in existing user
-                    </button>
+            {/* Floating Account Actions */}
+            <div className="home-account-actions">
 
+                {user.isGuest ? (
+                    <>
+                        <button
+                            type="button"
+                            className="home-nav-login"
+                            onClick={handleLogin}
+                        >
+                            Log in existing user
+                        </button>
+
+                        <button
+                            type="button"
+                            className="home-nav-login"
+                            onClick={handleSignup}
+                        >
+                            Sign-up
+                        </button>
+                    </>
+                ) : (
                     <button
                         type="button"
                         className="home-nav-login"
-                        onClick={handleSignup}
+                        onClick={handleLogout}
                     >
-                        Sign-up
+                        Log out
                     </button>
-                </div>
-            )}
+                )}
+
+            </div>
 
             {/* Main Content */}
             <main className="home-main">
